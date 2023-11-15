@@ -97,7 +97,7 @@ jobs:
     - name: Tagging 
       run: |
         IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/jenkins"
-        GITLAB_TAGG="$IMAGE_NAME:JENKINS"
+        JENKINS_TAGG="$IMAGE_NAME:JENKINS"
         echo "Tag Is: $JENKINS_TAGG"
         echo "JENKINS_TAGG=$JENKINS_TAGG" >> $GITHUB_ENV
 
