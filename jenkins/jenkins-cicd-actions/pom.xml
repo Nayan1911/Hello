@@ -41,6 +41,7 @@
                 </configuration>
             </plugin>
         </plugins>
+        <finalName>jenkins</finalName>
     </build>
 
 </project>
