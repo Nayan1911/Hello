@@ -1,11 +1,3 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
-
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 name: Java CI with Maven
 
 on:
@@ -32,13 +24,79 @@ jobs:
       run: |
         cd github/github-cicd-actions
         mvn clean install
+        # Upload artifacts
+        mkdir -p $GITHUB_WORKSPACE/artifacts/github
+        cp target/github.jar $GITHUB_WORKSPACE/artifacts/github
+    - name: Archive artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: github
+        path: $GITHUB_WORKSPACE/artifacts/github
+
 
     - name: Build and install gitlab-cicd
       run: |
         cd gitlab/gitlab-cicd-actions
         mvn clean install
+        # Upload artifacts
+        mkdir -p $GITHUB_WORKSPACE/artifacts/gitlab
+        cp target/gitlab.jar $GITHUB_WORKSPACE/artifacts/gitlab
+    - name: Archive artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: gitlab
+        path: $GITHUB_WORKSPACE/artifacts/gitlab
 
     - name: Build and install jenkins-cicd
       run: |
         cd jenkins/jenkins-cicd-actions
         mvn clean install
+        # Upload artifacts
+        mkdir -p $GITHUB_WORKSPACE/artifacts/jenkins
+        cp target/jenkins.jar $GITHUB_WORKSPACE/artifacts/jenkins
+    - name: Archive artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: jenkins
+        path: $GITHUB_WORKSPACE/artifacts/jenkins
+
+ push:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download and Build Docker Image for github-cicd
+        run: |
+          IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/github"
+          TAG="github"
+          cd github/github-cicd-actions
+          # Download artifacts
+          mkdir -p target
+          cp $GITHUB_WORKSPACE/artifacts/github/github.jar target
+          docker build -t $IMAGE_NAME:$TAG -f Dockerfile .
+          docker push $IMAGE_NAME:$TAG
+
+      - name: Download and Build Docker Image for gitlab-cicd
+        run: |
+          IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/gitlab"
+          TAG="latest"
+          cd gitlab/gitlab-cicd-actions
+          # Download artifacts
+          mkdir -p target
+          cp $GITHUB_WORKSPACE/artifacts/gitlab/gitlab.jar target
+          docker build -t $IMAGE_NAME:$TAG -f Dockerfile .
+          docker push $IMAGE_NAME:$TAG
+
+      - name: Download and Build Docker Image for jenkins-cicd
+        run: |
+          IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/jenkins"
+          TAG="latest"
+          cd jenkins/jenkins-cicd-actions
+          # Download artifacts
+          mkdir -p target
+          cp $GITHUB_WORKSPACE/artifacts/jenkins/jenkins.jar target
+          docker build -t $IMAGE_NAME:$TAG -f Dockerfile .
+          docker push $IMAGE_NAME:$TAG
