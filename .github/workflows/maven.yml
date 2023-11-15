@@ -25,13 +25,13 @@ jobs:
         cd github/github-cicd-actions
         mvn clean install
         # Upload artifacts
-        mkdir -p $GITHUB_WORKSPACE/artifacts/github
-        cp target/github.jar $GITHUB_WORKSPACE/artifacts/github
+        mkdir -p $GITHUB_WORKSPACE/artifacts/github-cicd
+        cp target/github.jar $GITHUB_WORKSPACE/artifacts/github-cicd
     - name: Archive artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: github
-        path: $GITHUB_WORKSPACE/artifacts/github
+        name: github-cicd
+        path: $GITHUB_WORKSPACE/artifacts/github-cicd
 
 
     - name: Build and install gitlab-cicd
@@ -39,26 +39,26 @@ jobs:
         cd gitlab/gitlab-cicd-actions
         mvn clean install
         # Upload artifacts
-        mkdir -p $GITHUB_WORKSPACE/artifacts/gitlab
-        cp target/gitlab.jar $GITHUB_WORKSPACE/artifacts/gitlab
+        mkdir -p $GITHUB_WORKSPACE/artifacts/gitlab-cicd
+        cp target/gitlab.jar $GITHUB_WORKSPACE/artifacts/gitlab-cicd
     - name: Archive artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: gitlab
-        path: $GITHUB_WORKSPACE/artifacts/gitlab
+        name: gitlab-cicd
+        path: $GITHUB_WORKSPACE/artifacts/gitlab-cicd
 
     - name: Build and install jenkins-cicd
       run: |
         cd jenkins/jenkins-cicd-actions
         mvn clean install
         # Upload artifacts
-        mkdir -p $GITHUB_WORKSPACE/artifacts/jenkins
-        cp target/jenkins.jar $GITHUB_WORKSPACE/artifacts/jenkins
+        mkdir -p $GITHUB_WORKSPACE/artifacts/jenkins-cicd
+        cp target/jenkins.jar $GITHUB_WORKSPACE/artifacts/jenkins-cicd
     - name: Archive artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: jenkins
-        path: $GITHUB_WORKSPACE/artifacts/jenkins
+        name: jenkins-cicd
+        path: $GITHUB_WORKSPACE/artifacts/jenkins-cicd
 
   push:
      needs: build
@@ -71,11 +71,11 @@ jobs:
        - name: Download and Build Docker Image for github-cicd
          run: |
            IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/github"
-           TAG="github"
+           TAG="latest"
            cd github/github-cicd-actions
            # Download artifacts
            mkdir -p target
-           cp $GITHUB_WORKSPACE/artifacts/github/github.jar target
+           cp $GITHUB_WORKSPACE/artifacts/github-cicd/github.jar target
            docker build -t $IMAGE_NAME:$TAG -f Dockerfile .
            docker push $IMAGE_NAME:$TAG
 
@@ -86,7 +86,7 @@ jobs:
            cd gitlab/gitlab-cicd-actions
            # Download artifacts
            mkdir -p target
-           cp $GITHUB_WORKSPACE/artifacts/gitlab/gitlab.jar target
+           cp $GITHUB_WORKSPACE/artifacts/gitlab-cicd/gitlab.jar target
            docker build -t $IMAGE_NAME:$TAG -f Dockerfile .
            docker push $IMAGE_NAME:$TAG
 
@@ -97,6 +97,6 @@ jobs:
            cd jenkins/jenkins-cicd-actions
            # Download artifacts
            mkdir -p target
-           cp $GITHUB_WORKSPACE/artifacts/jenkins/jenkins.jar target
+           cp $GITHUB_WORKSPACE/artifacts/jenkins-cicd/jenkins.jar target
            docker build -t $IMAGE_NAME:$TAG -f Dockerfile .
            docker push $IMAGE_NAME:$TAG
