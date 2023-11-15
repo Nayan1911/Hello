@@ -41,6 +41,7 @@
                 </configuration>
             </plugin>
         </plugins>
+        <finalName>github</finalName>     
     </build>
 
 </project>
