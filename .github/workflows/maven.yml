@@ -60,43 +60,43 @@ jobs:
         name: jenkins
         path: $GITHUB_WORKSPACE/artifacts/jenkins
 
- push:
-    needs: build
-    runs-on: ubuntu-latest
+  push:
+     needs: build
+     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+     steps:
+       - name: Checkout repository
+         uses: actions/checkout@v3
 
-      - name: Download and Build Docker Image for github-cicd
-        run: |
-          IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/github"
-          TAG="github"
-          cd github/github-cicd-actions
-          # Download artifacts
-          mkdir -p target
-          cp $GITHUB_WORKSPACE/artifacts/github/github.jar target
-          docker build -t $IMAGE_NAME:$TAG -f Dockerfile .
-          docker push $IMAGE_NAME:$TAG
+       - name: Download and Build Docker Image for github-cicd
+         run: |
+           IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/github"
+           TAG="github"
+           cd github/github-cicd-actions
+           # Download artifacts
+           mkdir -p target
+           cp $GITHUB_WORKSPACE/artifacts/github/github.jar target
+           docker build -t $IMAGE_NAME:$TAG -f Dockerfile .
+           docker push $IMAGE_NAME:$TAG
 
-      - name: Download and Build Docker Image for gitlab-cicd
-        run: |
-          IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/gitlab"
-          TAG="latest"
-          cd gitlab/gitlab-cicd-actions
-          # Download artifacts
-          mkdir -p target
-          cp $GITHUB_WORKSPACE/artifacts/gitlab/gitlab.jar target
-          docker build -t $IMAGE_NAME:$TAG -f Dockerfile .
-          docker push $IMAGE_NAME:$TAG
+       - name: Download and Build Docker Image for gitlab-cicd
+         run: |
+           IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/gitlab"
+           TAG="latest"
+           cd gitlab/gitlab-cicd-actions
+           # Download artifacts
+           mkdir -p target
+           cp $GITHUB_WORKSPACE/artifacts/gitlab/gitlab.jar target
+           docker build -t $IMAGE_NAME:$TAG -f Dockerfile .
+           docker push $IMAGE_NAME:$TAG
 
-      - name: Download and Build Docker Image for jenkins-cicd
-        run: |
-          IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/jenkins"
-          TAG="latest"
-          cd jenkins/jenkins-cicd-actions
-          # Download artifacts
-          mkdir -p target
-          cp $GITHUB_WORKSPACE/artifacts/jenkins/jenkins.jar target
-          docker build -t $IMAGE_NAME:$TAG -f Dockerfile .
-          docker push $IMAGE_NAME:$TAG
+       - name: Download and Build Docker Image for jenkins-cicd
+         run: |
+           IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/jenkins"
+           TAG="latest"
+           cd jenkins/jenkins-cicd-actions
+           # Download artifacts
+           mkdir -p target
+           cp $GITHUB_WORKSPACE/artifacts/jenkins/jenkins.jar target
+           docker build -t $IMAGE_NAME:$TAG -f Dockerfile .
+           docker push $IMAGE_NAME:$TAG
