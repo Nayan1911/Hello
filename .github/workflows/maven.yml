@@ -26,11 +26,19 @@ jobs:
         cd github/github-cicd-actions
         mvn clean install
 
+    - name: Tagging 
+      run: |
+        IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/github"
+        GITHUB_TAGG="$IMAGE_NAME:GITHUB"
+        echo "Tag Is: $GITHUB_TAGG"
+        echo "GITHUB_TAGG=$GITHUB_TAGG" >> $GITHUB_ENV
+
     - name: Build Docker image for github-cicd
       run: |
         cd github/github-cicd-actions
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/github:github -f Dockerfile .
-        docker push ${{ secrets.DOCKER_USERNAME }}/github:github
+        echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+        docker build -t ${{ env.GITHUB_TAGG }} .
+        docker push ${{ env.GITHUB_TAGG }}
 
   #gitlab-cicd project
   build-gitlab:
@@ -52,11 +60,19 @@ jobs:
         cd gitlab/gitlab-cicd-actions
         mvn clean install
 
+    - name: Tagging 
+      run: |
+        IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/gitlab"
+        GITLAB_TAGG="$IMAGE_NAME:GITHUB"
+        echo "Tag Is: $GITLAB_TAGG"
+        echo "GITLAB_TAGG=$GITLAB_TAGG" >> $GITHUB_ENV
+
     - name: Build Docker image for gitlab-cicd
       run: |
         cd gitlab/gitlab-cicd-actions
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/gitlab:gitlab -f Dockerfile .
-        docker push ${{ secrets.DOCKER_USERNAME }}/gitlab:gitlab
+        echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+        docker build -t ${{ env.GITLAB_TAGG }} .
+        docker push ${{ env.GITLAB_TAGG }}
 
   #jenkins-cicd project
   build-jenkins:
@@ -78,8 +94,16 @@ jobs:
         cd jenkins/jenkins-cicd-actions
         mvn clean install
 
+    - name: Tagging 
+      run: |
+        IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/jenkins"
+        GITLAB_TAGG="$IMAGE_NAME:JENKINS"
+        echo "Tag Is: $JENKINS_TAGG"
+        echo "JENKINS_TAGG=$JENKINS_TAGG" >> $GITHUB_ENV
+
     - name: Build Docker image for jenkins-cicd
       run: |
         cd jenkins/jenkins-cicd-actions
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/jenkins:jenkins -f Dockerfile .
-        docker push ${{ secrets.DOCKER_USERNAME }}/jenkins:jenkins
+        echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+        docker build -t ${{ env.JENKINS_TAGG }} .
+        docker push ${{ env.JENKINS_TAGG }}
